@@ -1,0 +1,75 @@
+version: '3.8'
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - product-service
+      - order-service
+      - customer-service
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - product-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://product-db:5432/products
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345678
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - order-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://order-db:5432/orders
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+
+  customer-service:
+    build: ./customer-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - customer-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://customer-db:5432/customers
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345678
+
+  product-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: products
+    volumes:
+      - product-data:/var/lib/postgresql/data
+
+  order-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: orders
+    volumes:
+      - order-data:/var/lib/postgresql/data
+
+  customer-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: customers
+    volumes:
+      - customer-data:/var/lib/postgresql/data
+
+volumes:
+  product-data:
+  order-data:
+  customer-data:
